@@ -6,9 +6,9 @@
 
 ## 演示视频
 
-**约2分09秒，展示全文研读、解读报告、创新点对照与原文图表回查。** 点击下方封面打开视频：
+**约2分09秒，展示全文研读、解读报告、创新点对照与原文图表回查。** 点击下方播放器即可在本页观看：
 
-[![研证EvidenceMap演示视频：点击观看](docs/media/demo-cover.jpg)](https://gitee.com/feng-zhongchen/ai-hackathon/blob/main/docs/media/evidencemap-demo.mp4)
+![研证EvidenceMap演示视频](https://gitee.com/feng-zhongchen/ai-hackathon/raw/main/docs/media/evidencemap-demo.mp4)
 
 [打开演示视频](https://gitee.com/feng-zhongchen/ai-hackathon/blob/main/docs/media/evidencemap-demo.mp4) · [下载MP4后观看](https://gitee.com/feng-zhongchen/ai-hackathon/raw/main/docs/media/evidencemap-demo.mp4)
 
