@@ -4,6 +4,16 @@
 
 上传PDF后，系统分批研读提取文字、跨章节综合，整理研究方向、摘要解读、全文架构、核心方法、创新点和阅读重点。关键解释保留引文与PDF页码，支持回查原文；原文图片、表格和框架图可在报告中查看。
 
+## 演示视频
+
+**约2分09秒，展示全文研读、解读报告、创新点对照与原文图表回查。** 点击下方封面打开视频：
+
+[![研证EvidenceMap演示视频：点击观看](docs/media/demo-cover.jpg)](https://gitee.com/feng-zhongchen/ai-hackathon/blob/main/docs/media/evidencemap-demo.mp4)
+
+[打开演示视频](https://gitee.com/feng-zhongchen/ai-hackathon/blob/main/docs/media/evidencemap-demo.mp4) · [下载MP4后观看](https://gitee.com/feng-zhongchen/ai-hackathon/raw/main/docs/media/evidencemap-demo.mp4)
+
+视频中的等待过程已作10倍速处理，并显示快进标识；其余部分正常播放。视频时长不代表实际全文解读耗时。若文件页无法直接预览，可下载后用本地播放器观看。
+
 ## 使用前请先确认
 
 本项目需要在自己的电脑上安装和启动，拉取代码后请先完成以下准备：
