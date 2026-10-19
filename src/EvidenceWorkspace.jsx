@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {ArrowLeft, ArrowUpRight, BookOpen, ChevronLeft, ChevronRight, FileText, Layers, LoaderCircle, Search, Upload} from 'lucide-react';
+import {ArrowUpRight, BookOpen, ChevronLeft, ChevronRight, FileText, Layers, LoaderCircle, Search, Upload} from 'lucide-react';
 import './evidence.css';
 import ReadingPreparation from './ReadingPreparation';
 import PaperReport from './PaperReport';
@@ -66,7 +66,7 @@ export default function EvidenceWorkspace(){
  function selectMaterial(material){setPage(material.pdf_page);setOffset(0);setSelection({bbox:material.bbox,label:material.label,block_id:material.block_id,page:material.pdf_page});}
  const overlay=selection&&pageInfo&&selection.page===page?{left:selection.bbox[0]/pageInfo.width*100+'%',top:selection.bbox[1]/pageInfo.height*100+'%',width:(selection.bbox[2]-selection.bbox[0])/pageInfo.width*100+'%',height:(selection.bbox[3]-selection.bbox[1])/pageInfo.height*100+'%'}:null;
  return <div className="evidence-app">
-  <header className="evidence-header"><a className="evidence-brand" href="/"><span><Layers size={22}/></span><div>研证<small>EvidenceMap</small></div></a><div className="evidence-stage"><span className="dot green"/>全文解读与阅读指引</div><a className="text-button" href="/?workspace=legacy"><ArrowLeft size={14}/>早期对比原型</a></header>
+  <header className="evidence-header"><a className="evidence-brand" href="/"><span><Layers size={22}/></span><div>研证<small>EvidenceMap</small></div></a><div className="evidence-stage"><span className="dot green"/>全文解读与阅读指引</div></header>
   <div className="evidence-intro"><div><div className="eyebrow">FROM PAPER TO UNDERSTANDING</div><h1>上传一篇论文，读懂它的核心。</h1><p>研究什么、如何展开、创新在哪里，以及你该重点读哪里。</p></div><div className="evidence-intro-note"><strong>你的阅读路径</strong><span>上传论文 → 全文研读 → 解读报告</span><small>原文依据随时可查，疑点与审查按需展开</small></div></div>
   {(error||message)&&<div className={'evidence-alert '+(error?'is-error':'')} role={error?'alert':'status'}>{error||message}</div>}
   <div className="evidence-layout">
