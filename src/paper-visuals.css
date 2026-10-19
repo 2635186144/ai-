@@ -1,0 +1,31 @@
+.source-visual-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:22px 0}
+.source-visual-card{margin:0;min-width:0;border:1px solid #deddd1;background:#fffef9}
+.paper-report .visual-image-button{position:relative;display:block;border:0;border-radius:0;background:white;width:100%;padding:12px;cursor:zoom-in;text-align:center;overflow:hidden}
+.visual-image-button img{display:block;width:100%;height:190px;object-fit:contain;object-position:center}
+.visual-image-button>span{position:absolute;bottom:8px;right:10px;background:#fffffff2;padding:3px 7px;font-size:11px;color:#5a6d5c;border:1px solid #e4e7dc}
+.source-visual-card figcaption{border-top:1px solid #ecebdf;padding:13px 15px;text-align:left}
+.source-visual-card figcaption>div{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.source-visual-card figcaption b{font:italic 20px/1.3 Georgia,'SimSun',serif;color:#8e7548}
+.source-visual-card figcaption span{font-size:12px;color:#6b7668}
+.source-visual-card figcaption p{font:16px/1.7 'Songti SC','SimSun',serif;color:#2d433d;margin:7px 0 0}
+.visual-overview{margin:26px 0;background:#f3f3ea;padding:18px}
+.visual-overview-label{font-size:12px;color:#6b755f;letter-spacing:2px}
+.visual-overview .source-visual-grid{grid-template-columns:minmax(0,1fr);margin:14px 0 0}
+.visual-overview .visual-image-button img{height:auto;max-height:380px}
+.visual-more{margin:18px 0}.visual-more>summary{cursor:pointer;color:#526c56;font-size:14px;border-bottom:1px solid #d6decc;padding:8px 0}
+.visual-boundary{font:12px/1.8 'Microsoft YaHei',sans-serif;color:#7a7968;margin:14px 0}
+.source-visual-grid.is-inline{gap:12px;margin:16px 0 0}.is-inline .visual-image-button img{height:150px}.is-inline figcaption p{font-size:14px}
+.visual-image-error{font-size:13px;line-height:1.7;color:#866c46;padding:30px 10px}
+.source-visual-dialog{box-sizing:border-box;border:1px solid #d5dacd;border-radius:4px;background:#fffef9;color:#2b423a;padding:22px;width:min(1180px,calc(100vw - 36px));max-height:calc(100dvh - 36px);overflow:auto;box-shadow:0 22px 100px #152b2944}
+.source-visual-dialog::backdrop{background:#152820a6}
+.source-visual-dialog>header{display:flex;justify-content:space-between;align-items:start;gap:20px;border-bottom:1px solid #dfe2d5;padding-bottom:14px}
+.source-visual-dialog h3{font:600 23px/1.6 'Songti SC','SimSun',serif;margin:5px 0 0}.source-visual-dialog header span{font-size:12px;color:#7a816e}
+.source-visual-dialog button,.source-visual-dialog a{font:14px/1.6 'Microsoft YaHei',sans-serif;color:#315b45;background:none;border:1px solid #cdd7c2;border-radius:2px;padding:7px 12px;cursor:pointer;text-decoration:none}
+.source-visual-dialog button:focus-visible,.visual-image-button:focus-visible{outline:3px solid #8caa77;outline-offset:3px}
+.source-visual-dialog button[aria-pressed=true]{background:#285c43;color:white;border-color:#285c43}
+.visual-view-actions{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}.visual-view-actions a{margin-left:auto}
+.visual-large-scroll{overflow:auto;max-height:65dvh;background:#ebece5;border:1px solid #e0e2d5;padding:12px;text-align:center}
+.visual-large-scroll img{display:block;width:100%;height:auto;margin:auto;background:white;max-width:1040px}
+.visual-large-scroll.is-zoomed img{width:auto;max-width:none;min-width:900px;margin:0}
+.visual-source-caption{white-space:pre-line;font:16px/1.8 'Songti SC','SimSun',serif;margin:16px 0}
+@media(max-width:750px){.source-visual-grid{grid-template-columns:minmax(0,1fr);gap:14px}.visual-image-button img{height:210px}.source-visual-grid.is-inline .visual-image-button img{height:180px}.visual-overview{padding:12px}.source-visual-dialog{padding:15px;width:calc(100vw - 20px);max-height:calc(100dvh - 20px)}.source-visual-dialog h3{font-size:18px}.source-visual-dialog header>button{flex-shrink:0}.visual-view-actions a{margin-left:0}.visual-view-actions button,.visual-view-actions a{font-size:12px;padding:6px 9px}.visual-large-scroll{padding:4px}.source-visual-card figcaption p{font-size:16px}}

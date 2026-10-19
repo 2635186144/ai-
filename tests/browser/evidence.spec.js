@@ -1,0 +1,64 @@
+import {test,expect} from '@playwright/test';
+
+test('evidence workspace uploads, parses, locates and previews real text',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto('/?workspace=evidence&tools=1');
+ await expect(page.getByRole('heading',{name:'上传一篇论文，读懂它的核心。'})).toBeVisible();
+ const registeredPromise=page.waitForResponse(r=>r.url().endsWith('/api/v2/documents')&&r.request().method()==='POST');
+ await page.locator('input[type=file]').setInputFiles('tests/fixtures/retrieval-sample.pdf');
+ const registered=await (await registeredPromise).json();
+ await expect(page.getByRole('status')).toContainText('原始文件已登记并保存');
+ const metadata=await (await page.request.get('/api/v2/documents/'+registered.id)).json();
+ await expect(page.locator('.evidence-document.selected')).toContainText(metadata.title);
+ if(!metadata.extraction)await page.getByRole('button',{name:'解析结构',exact:true}).click();
+ await expect(page.getByRole('img',{name:'论文原文 PDF 第 1 页'})).toBeVisible();
+ await page.getByRole('combobox',{name:'查看 PDF 页码'}).selectOption('2');
+ await page.getByRole('textbox',{name:'当前页原文关键词'}).fill('SyntheticQA');
+ await page.getByRole('button',{name:'检索当前页原文'}).click();
+ const block=page.locator('.evidence-block').filter({hasText:'SyntheticQA'}).first();
+ await expect(block).toBeVisible();await block.click();
+ await expect(page.getByLabel('当前证据区域')).toBeVisible();
+ await expect(page.locator('.evidence-selection')).toContainText('SyntheticQA');
+ const link=page.getByRole('link',{name:'打开文本块区域图'});
+ const imageResponse=await page.request.get(await link.getAttribute('href'));
+ expect(imageResponse.status()).toBe(200);expect(imageResponse.headers()['content-type']).toContain('image/png');
+ await page.evaluate(()=>window.scrollTo(0,0));
+ await page.screenshot({path:'test-results/evidence-desktop.png',fullPage:true});
+ await page.reload();
+ await expect(page.getByRole('img',{name:'论文原文 PDF 第 1 页'})).toBeVisible();
+ await page.setViewportSize({width:390,height:844});
+ await expect(page.getByRole('heading',{name:'证据索引'})).toBeVisible();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
+ await page.screenshot({path:'test-results/evidence-mobile.png',fullPage:true});
+ expect(errors).toEqual([]);
+});
+
+test('real LoRA figure and appendix candidate navigation stays explicitly provisional',async({page})=>{
+ test.setTimeout(45000);
+ await page.goto('/?workspace=evidence&tools=1');
+ const registeredPromise=page.waitForResponse(r=>r.url().endsWith('/api/v2/documents')&&r.request().method()==='POST');
+ await page.locator('input[type=file]').setInputFiles('knowledge/lora/paper.pdf');
+ const registered=await (await registeredPromise).json();
+ await expect(page.getByRole('status')).toContainText('原始文件已登记并保存');
+ const metadata=await (await page.request.get('/api/v2/documents/'+registered.id)).json();
+ await expect(page.locator('.evidence-document.selected')).toContainText(metadata.title);
+ const parse=page.getByRole('button',{name:'解析结构',exact:true});
+ if(!metadata.extraction){await expect(parse).toBeVisible();await parse.click();}
+ await expect(page.getByRole('button',{name:'全篇材料候选'})).toBeVisible();
+ await page.getByRole('button',{name:'全篇材料候选'}).click();
+ const appendix=page.locator('.evidence-material').filter({hasText:'附录标题候选'}).first();
+ await expect(appendix).toBeVisible();await appendix.click();
+ await expect(page.getByLabel('当前证据区域')).toBeVisible();
+ await page.getByText('解析边界与本页提示',{exact:true}).click();
+ await expect(page.locator('.evidence-quality')).toContainText('未执行 OCR、语义精读或审稿');
+ await page.getByRole('combobox',{name:'查看 PDF 页码'}).selectOption('24');
+ await page.getByRole('button',{name:'当前页文本',exact:true}).click();
+ await page.getByRole('textbox',{name:'当前页原文关键词'}).fill('similarity');
+ await page.getByRole('button',{name:'检索当前页原文'}).click();
+ await page.locator('.evidence-block').filter({hasText:'similarity'}).first().click();
+ const preview=page.getByRole('img',{name:'论文原文 PDF 第 24 页'});
+ await expect(preview).toBeVisible();
+ await expect.poll(()=>preview.evaluate(img=>img.complete&&img.naturalWidth>0)).toBe(true);
+ await page.evaluate(()=>window.scrollTo(0,0));
+ await page.screenshot({path:'test-results/evidence-lora.png',fullPage:true});
+});
