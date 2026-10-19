@@ -6,7 +6,7 @@
 
 ## 演示视频
 
-**下方为16秒循环动态预览**，节选目录与论证脉络、原文图表和创新点对照操作；完整演示约2分09秒。点击动图可打开完整视频。
+**下方为16秒循环动态预览**，节选上传论文、全文解读、目录与论证脉络及原文图表操作；完整演示约1分49秒。点击动图可打开完整视频。
 
 [![研证EvidenceMap操作节选动态预览](docs/media/demo-preview.gif)](https://gitee.com/feng-zhongchen/ai-hackathon/blob/main/docs/media/evidencemap-demo.mp4)
 
