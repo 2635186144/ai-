@@ -5,7 +5,7 @@ import pytest
 from backend.evidence.paper_reports import ReportControl,PaperReports
 from backend.evidence.parser import EvidenceError
 from tests.test_evidence import client,store
-from tests.test_paper_reports import setup_run,ctl,token,mock_models
+from tests.test_paper_reports import setup_run,ctl,token,mock_models,synthetic_only
 
 
 def completed(client,store,monkeypatch):
