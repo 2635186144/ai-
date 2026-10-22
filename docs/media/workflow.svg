@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="650" viewBox="0 0 1440 650" role="img" aria-labelledby="title desc">
+ <title id="title">研证 EvidenceMap 全文解读流程</title>
+ <desc id="desc">上传PDF后本地解析，模型分批研读并跨章节综合，形成可回查原文的报告。笔记与进度保存为检查点，支持继续处理未完成步骤。</desc>
+ <defs>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="none" stroke="#7e947f" stroke-width="1.5"/></marker>
+ </defs>
+ <rect width="1440" height="650" fill="#f8f8f2"/>
+ <g font-family="Microsoft YaHei, PingFang SC, sans-serif">
+  <text x="52" y="58" fill="#8c7654" font-size="17" letter-spacing="3">EVIDENCEMAP / WORKFLOW</text>
+  <text x="52" y="111" fill="#233e35" font-size="34" font-weight="600">全文解读与原文回查</text>
+  <text x="52" y="149" fill="#67766c" font-size="20">从上传PDF开始，保留阅读过程中的来源与进度。</text>
+  <g fill="#fffef9" stroke="#d4dccf" stroke-width="1.5">
+   <rect x="52" y="194" width="302" height="224" rx="12"/>
+   <rect x="397" y="194" width="302" height="224" rx="12"/>
+   <rect x="742" y="194" width="302" height="224" rx="12"/>
+   <rect x="1087" y="194" width="301" height="224" rx="12"/>
+  </g>
+  <g fill="#9a8157" font-size="22" font-style="italic"><text x="75" y="232">01</text><text x="420" y="232">02</text><text x="765" y="232">03</text><text x="1110" y="232">04</text></g>
+  <g font-size="16">
+   <g fill="#eef1e5"><rect x="264" y="214" width="66" height="27" rx="5"/><rect x="1298" y="214" width="66" height="27" rx="5"/></g>
+   <g fill="#dcebe3"><rect x="587" y="214" width="88" height="27" rx="5"/><rect x="932" y="214" width="88" height="27" rx="5"/></g>
+   <g fill="#45644f"><text x="281" y="233">本地</text><text x="1315" y="233">本地</text><text x="600" y="233">模型调用</text><text x="945" y="233">模型调用</text></g>
+  </g>
+  <g fill="#233e35" font-size="27" font-weight="600"><text x="75" y="286">上传与解析</text><text x="420" y="286">分批研读</text><text x="765" y="286">跨章节综合</text><text x="1110" y="286">报告与回查</text></g>
+  <g fill="#5d7065" font-size="20">
+   <text x="75" y="333">提取文字、页码与位置</text><text x="75" y="369">识别章节及图表候选</text>
+   <text x="420" y="333">按批阅读提取文字</text><text x="420" y="369">保存笔记与原文引文</text>
+   <text x="765" y="333">串联全文思路与方法</text><text x="765" y="369">整理贡献及阅读重点</text>
+   <text x="1110" y="333">目录与论证脉络双视图</text><text x="1110" y="369">定位原页、核对图表</text>
+  </g>
+  <g stroke="#7e947f" stroke-width="2" marker-end="url(#arrow)"><path d="M360 302 H386"/><path d="M705 302 H731"/><path d="M1050 302 H1076"/></g>
+  <path d="M548 418 V455 H893 V418" stroke="#a5b39d" stroke-width="1.6" fill="none"/>
+  <rect x="220" y="478" width="1000" height="64" rx="9" fill="#eaf0e4"/>
+  <text x="720" y="519" fill="#3c5d49" font-size="22" text-anchor="middle">本地保存任务检查点 · 支持暂停与继续 · 已完成步骤复用 · 恢复受请求预算约束</text>
+  <text x="52" y="593" fill="#67766c" font-size="19">原文PDF与图片在本地预览；提取文字、来源位置及笔记按确认范围发送给模型服务商。</text>
+  <text x="52" y="624" fill="#67766c" font-size="19">引文位置由程序核对，解释的语义支持仍需结合原文复核。</text>
+ </g>
+</svg>
