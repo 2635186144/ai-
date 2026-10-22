@@ -18,7 +18,7 @@ test('paragraph worksheet saves grounded facts, rejects fake quotes and resumes 
  for(const m of prep.materials)await update('mark_material',{material_id:m.id,status:'indexed'});
  await update('confirm_sections');
  await page.reload();
- await page.locator('.evidence-document').filter({hasText:'reading-sample'}).filter({hasText:'主论文'}).click();
+ await page.locator('.evidence-document[title="reading-sample.pdf"]').filter({hasText:'主论文'}).click();
  await page.getByRole('button',{name:'打开分节原文包',exact:true}).click();
  const sheet=page.getByRole('region',{name:'逐段事实底稿'});
  await expect(sheet.getByRole('heading',{name:'逐段读清，逐条留证。'})).toBeVisible();
@@ -56,7 +56,7 @@ test('paragraph worksheet saves grounded facts, rejects fake quotes and resumes 
  await expect(sheet.locator('.support-status')).toContainText('存在证据缺口或矛盾');
  if(!data.model.configured)await expect(sheet.getByRole('button',{name:'生成本段事实底稿',exact:true})).toBeDisabled();
  await sheet.screenshot({path:'test-results/paragraph-facts-desktop.png'});
- await page.reload();await page.locator('.evidence-document').filter({hasText:'reading-sample'}).filter({hasText:'主论文'}).click();
+ await page.reload();await page.locator('.evidence-document[title="reading-sample.pdf"]').filter({hasText:'主论文'}).click();
  await page.getByRole('button',{name:'打开分节原文包',exact:true}).click();
  await nav.getByRole('button').nth(1).click();
  await expect(sheet.getByLabel('事实 1 陈述',{exact:true})).toHaveValue('测试原文说明方法使用受控数据集。');

@@ -14,7 +14,7 @@ test('unconfirmed source opens as preview then enters reading without fake confi
  await update('set_sections',{sections:[plan.sections[0]]});
  for(const p of plan.pages)await update('confirm_page',{page:p.page,status:'pending'});
  for(const m of plan.materials)await update('mark_material',{material_id:m.id,status:'pending'});
- await page.reload();await page.locator('.evidence-document').filter({hasText:'reading-sample'}).filter({hasText:'主论文'}).click();
+ await page.reload();await page.locator('.evidence-document[title="reading-sample.pdf"]').filter({hasText:'主论文'}).click();
  const prep=page.getByRole('region',{name:'章节与覆盖准备'});
  await expect(prep.getByRole('heading',{name:'选择章节，开始阅读'})).toBeVisible();
  await expect(prep.getByLabel('新增章节名称')).not.toBeVisible();

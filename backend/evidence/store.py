@@ -11,6 +11,7 @@ import pymupdf
 
 from backend.evidence.models import BlockPage, EvidenceDocument, ExtractionSummary, MaterialCandidate, SourceBlock
 from backend.evidence.parser import PARSER_VERSION, EvidenceError, digest, inspect_pdf, normalize, parse_document
+from backend.evidence.titles import identify_title
 from design.contracts import DocumentVersion
 
 PROJECT = Path(__file__).resolve().parents[2]
@@ -167,7 +168,11 @@ class EvidenceStore:
             row = self._row(db, document_id)
             metadata = db.execute('SELECT * FROM evidence_metadata WHERE document_version_id=?', (document_id,)).fetchone()
             parsed = db.execute('SELECT * FROM evidence_extractions WHERE document_version_id=? AND parser_version=?', (document_id, PARSER_VERSION)).fetchone()
-            return EvidenceDocument(document=self._document(row), filename=metadata['filename'], title=metadata['title'], extraction=self._summary(parsed))
+            front = [json.loads(r[0]) for r in db.execute(
+                'SELECT payload_json FROM evidence_blocks WHERE extraction_id=? AND pdf_page<=2', (parsed['id'],))] if parsed else []
+            identity = identify_title(front, metadata['filename'], metadata['title'])
+            return EvidenceDocument(document=self._document(row), filename=metadata['filename'], title=identity['text'],
+                                    extraction=self._summary(parsed), title_identity=identity)
 
     def list_documents(self, limit, offset):
         with self.connection() as db:

@@ -42,7 +42,7 @@ test('synthetic UI workflow shows progress, pauses, resumes, exports and survive
   }
   await route.fulfill({json:run});
  });
- async function open(){await page.reload();await page.locator('.evidence-document').filter({hasText:'reading-sample'}).filter({hasText:'主论文'}).click();await page.getByRole('button',{name:'打开分节原文包',exact:true}).click();}
+ async function open(){await page.reload();await page.locator('.evidence-document[title="reading-sample.pdf"]').filter({hasText:'主论文'}).click();await page.getByRole('button',{name:'打开分节原文包',exact:true}).click();}
  await open();const panel=page.getByRole('region',{name:'分节自动审查任务'});
  await expect(panel.getByRole('button',{name:'准备本节任务'})).toBeDisabled();
  await panel.getByRole('checkbox',{name:/我同意将本节原文/}).check();

@@ -92,6 +92,15 @@ class ReadingStop(Contract):
     evidence_ids: list[str] = Field(min_length=1, max_length=12)
 
 
+class GuidanceCheck(Contract):
+    target: str = Field(pattern=r'^(conclusion|limitations|open_questions\.[0-9]+)$')
+    kind: Literal['explanation', 'reading_question', 'criticism', 'extraction_gap']
+    judgment: Literal['supported', 'partial', 'unresolved', 'withdrawn']
+    reason: str = Field(min_length=1, max_length=500)
+    evidence_ids: list[str] = Field(default_factory=list, max_length=6)
+    source_ids: list[str] = Field(default_factory=list, max_length=6)
+
+
 class PaperReport(Contract):
     title: Insight
     research_direction: Insight
@@ -105,6 +114,7 @@ class PaperReport(Contract):
     conclusion: Insight
     limitations: Insight
     open_questions: list[str] = Field(max_length=20)
+    guidance_checks: list[GuidanceCheck] = Field(default_factory=list, max_length=22)
 
 
 class ReportOverview(Contract):
@@ -126,6 +136,7 @@ class ReportGuidance(Contract):
     conclusion: Insight
     limitations: Insight
     open_questions: list[str] = Field(max_length=20)
+    guidance_checks: list[GuidanceCheck] = Field(default_factory=list, max_length=22)
 
 
 REPORT_PART_MODELS = {'overview': ReportOverview, 'core': ReportCore, 'guidance': ReportGuidance}

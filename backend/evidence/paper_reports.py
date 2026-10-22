@@ -20,6 +20,7 @@ from backend.evidence.store import now
 from backend.evidence.workflow import configuration_signature
 from backend.evidence.report_quotes import CONTRACT, quote_candidates, locate, QuoteValidationError
 from backend.evidence.report_structure import build_outline, containing_section, section_ids_for_evidence
+from backend.evidence.report_support import source_pack, validate_checks, support_view
 
 WORKERS = {}
 POLICY_VERSION = 'report-batches-v3-7000-64'
@@ -133,9 +134,15 @@ def validate_notes(raw, spans, index):
     return result
 
 
-def validate_report(raw, notes, part=None, outline=None):
+def validate_report(raw, notes, part=None, outline=None, support_pack=None):
     schema=REPORT_PART_MODELS[part] if part else PaperReport
-    result = schema.model_validate(raw).model_dump(mode='json')
+    # Ancillary review errors must not destroy a valid interpretation or add
+    # paid retries. The original response is already retained as a candidate.
+    try:result = schema.model_validate(raw).model_dump(mode='json')
+    except ValidationError:
+        if not isinstance(raw,dict) or 'guidance_checks' not in raw:raise
+        cleaned={**raw,'guidance_checks':[]}
+        result=schema.model_validate(cleaned).model_dump(mode='json')
     evidence = {e['id']: e for note in notes for e in note['evidence']}
     def check(value):
         if isinstance(value, dict):
@@ -144,10 +151,14 @@ def validate_report(raw, notes, part=None, outline=None):
                 ids = value[field]
                 if len(ids) != len(set(ids)) or any(i not in evidence for i in ids):
                     raise EvidenceError(422, 'report_evidence_invalid', '综合报告引用了不存在或重复的原文证据，未发布')
-            for item in value.values():check(item)
+            for key,item in value.items():
+                if key!='guidance_checks':check(item)
         elif isinstance(value, list):
             for item in value:check(item)
     check(result)
+    try:validate_checks(result, evidence, support_pack)
+    except EvidenceError:
+        result['guidance_checks']=[]
     section_ids={s['id'] for s in (outline or {}).get('sections',[])}
     for chapter in result.get('argument_map',[]):
         ids=chapter['source_section_ids']
@@ -230,7 +241,7 @@ class PaperReports:
             output=validate_consolidation(data['response'],[lookup[i]['output'] for i in task['input_task_ids']])
         elif command.repair_source_mapping:
             output,repairs=repair_source_mapping(data['response'],[t['output'] for t in run['tasks'] if t['kind']=='reading'],task['part'],run.get('source_outline'))
-        else:output=validate_report(data['response'],[t['output'] for t in run['tasks'] if t['kind']=='reading'],task.get('part'),run.get('source_outline'))
+        else:output=validate_report(data['response'],[t['output'] for t in run['tasks'] if t['kind']=='reading'],task.get('part'),run.get('source_outline'),task.get('guidance_source_pack'))
         with self.transaction(did,rid) as (db,current):
             if current['revision']!=command.revision or current['state']!='failed':raise EvidenceError(409,'stale_report_revision','检查点发生变化，未覆盖已有结果')
             target=next(t for t in current['tasks'] if t['id']==task['id'])
@@ -256,10 +267,11 @@ class PaperReports:
     def plan(self, did):
         source=self.source(did)
         profile=fact_model.status()
-        if source is None:return {'parsed':False,'model':profile,'calls_needed':None,'chunks':None}
+        identity=self.store.detail(did).title_identity.model_dump(mode='json')
+        if source is None:return {'parsed':False,'model':profile,'calls_needed':None,'chunks':None,'title_identity':identity}
         eid,blocks,summary,materials=source
         chunks=split_source(blocks)
-        return {'parsed':True,'extraction_id':eid,'source_outline':build_outline(eid,blocks),'model':profile,'chunks':len(chunks),'synthesis_calls':3,'calls_needed':len(chunks)+3,'policy_version':POLICY_VERSION,
+        return {'parsed':True,'extraction_id':eid,'source_outline':build_outline(eid,blocks),'title_identity':identity,'model':profile,'chunks':len(chunks),'synthesis_calls':3,'calls_needed':len(chunks)+3,'policy_version':POLICY_VERSION,
                 'recommended_max_calls':recommended_budget(len(chunks)+3),'automatic_recovery_retry_limit':1,'max_report_calls':MAX_REPORT_CALLS,
                 'reader_prompt_version':report_model.PROMPT_VERSION,'synthesis_prompt_version':report_model.SYNTHESIS_VERSION,
                 'text_pages':sorted({b['region']['pdf_page'] for b in blocks}), 'total_pages':len(summary.pages),
@@ -308,6 +320,13 @@ class PaperReports:
     def get(self,did,rid):
         with self.store.connection() as db:run=self.load(db,did,rid)
         result=self.present(run)
+        # Presentation metadata is independent of historical model outputs.
+        # Re-reading an old report never rewrites its title or task checkpoints.
+        result['title_identity']=self.store.detail(did).title_identity.model_dump(mode='json')
+        if run.get('report'):
+            guidance=next((t for t in run['tasks'] if t.get('part')=='guidance'),{})
+            _,blocks,_,_=self.source(did)
+            result['support_review']=support_view(run['report'],guidance.get('guidance_source_pack'),blocks)
         failed=next((t for t in run['tasks'] if t['state']=='failed'),None)
         result['candidate_available']=bool(failed and self.candidate_path(rid,failed).exists())
         if run['state']=='failed' and failed:
@@ -484,6 +503,10 @@ class PaperReports:
                 by_task={t['id']:t for t in run['tasks']}
                 notes=[by_task[i]['output'] for i in run['synthesis_input_task_ids']] if run.get('synthesis_input_task_ids') else [t['output'] for t in run['tasks'] if t['kind']=='reading']
                 payload={'reader_profile':run['reader_profile'],'all_batch_notes':synthesis_notes(notes),'coverage':run['coverage'],'part':task['part']}
+                if task['part']=='guidance':
+                    task['guidance_source_pack']=source_pack(blocks,[t['output'] for t in run['tasks'] if t['kind']=='reading'],
+                        [t['output'] for t in run['tasks'] if t['kind']=='synthesis' and t.get('output')])
+                    payload['support_source_pack']=task['guidance_source_pack']
                 if task.get('review_feedback'):
                     payload['review_feedback']=task['review_feedback']
                     payload['previous_part']=task['revision_history'][-1]['output']
@@ -576,7 +599,7 @@ class PaperReports:
                 return worker_token
             except (EvidenceError,ValidationError):public=self.get(did,rid)
         retryable={'fact_model_failed','report_schema_invalid','report_evidence_invalid','report_section_mapping_invalid',
-                   'report_reading_evidence_missing','report_reading_coverage_invalid','report_quote_invalid','report_notes_too_large'}
+                   'report_reading_evidence_missing','report_reading_coverage_invalid','report_quote_invalid','report_notes_too_large','report_support_invalid'}
         if code not in retryable or public.get('last_failure',{}).get('http_status') in (401,403,429):return None
         failed=next((t for t in public['tasks'] if t['state']=='failed'),None)
         if not failed or failed['attempts']>=2 or public['calls_reserved']>=public['max_calls']:return None
@@ -610,7 +633,7 @@ class PaperReports:
                     await run_in_threadpool(self.save_candidate,did,rid,task,raw)
                     with self.store.connection() as db:current=self.load(db,did,rid)
                     notes=[t['output'] for t in current['tasks'] if t['kind']=='reading']
-                    output=validate_report(raw,notes,task['part'],current.get('source_outline'))
+                    output=validate_report(raw,notes,task['part'],current.get('source_outline'),task.get('guidance_source_pack'))
                 if not await run_in_threadpool(self.finish,did,rid,token,task['id'],output,getattr(raw,'usage',{})):return
                 await asyncio.sleep(0)
         except asyncio.CancelledError:raise

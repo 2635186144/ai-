@@ -43,7 +43,7 @@ def report_for(notes):
             'innovations':[{'title':'Synthetic contribution','author_claim':insight('作者声称改善阅读过程。'),'explanation':insight('把全文笔记与原文定位连接。'),'boundary':insight('测试夹具不能证明真实优势。')}],
             'reading_route':[{'priority':'first','section':'Method','why':'先理解输入输出再看实验能否支持主张。','questions':['实验支持哪些方法假设？'],
                               'prerequisites':['基础计算机知识'],'evidence_ids':[ids[-1]]}],
-            'conclusion':insight('读者应理解方法与证据关系。'),'limitations':insight('视觉、数学与科研结论未核验。'),'open_questions':['真实效果尚待评估。']}
+            'conclusion':insight('读者应理解方法与证据关系。'),'limitations':insight('视觉、数学与科研结论未核验。'),'open_questions':['真实效果尚待评估。'],'guidance_checks':[]}
 
 
 def setup_run(client,store):

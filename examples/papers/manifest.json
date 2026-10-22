@@ -1,0 +1,40 @@
+{
+  "purpose": "体验样品；不包含分析历史或评测结果",
+  "papers": [
+    {
+      "file": "基于开源生态的数据科学与大数据技术人才培养研究_王学梅.pdf",
+      "original_filename": "基于开源生态的数据科学与大数据技术人才培养研究_王学梅.pdf",
+      "pdf_pages": 3,
+      "bytes": 1158067,
+      "sha256": "7190f4317612202a2face3d30d14e4380f05ea16e8be90337958c4ce911693af"
+    },
+    {
+      "file": "融合大语言模型的区块链开源项目主题挖掘与演化分析_饶芮瑞.pdf",
+      "original_filename": "融合大语言模型的区块链开源项目主题挖掘与演化分析_饶芮瑞.pdf",
+      "pdf_pages": 15,
+      "bytes": 1629222,
+      "sha256": "0068407e1bd3ae121b3ecc002b87a020f482cf53c382dfcee479614e33501a1b"
+    },
+    {
+      "file": "面向AI_Agent能力生态的开源协作治理：OpenClaw案例研究_耿航航.pdf",
+      "original_filename": "面向AI_Agent能力生态的开源协作治理：OpenClaw案例研究_耿航航.pdf",
+      "pdf_pages": 11,
+      "bytes": 1713600,
+      "sha256": "03773659c3a75d162aa294d0c360864b4cb01873a4f426dd0d2c115d98cd7310"
+    },
+    {
+      "file": "开源智能体Skill应用的人格权侵权行为认定与责任承担_赵精武.pdf",
+      "original_filename": "开源智能体Skill应用的人格权侵权行为认定与责任承担_赵精武.pdf",
+      "pdf_pages": 12,
+      "bytes": 1112600,
+      "sha256": "115123ac4a9bcc8eaa8562d65a54837a83a29ed3538924b186670573cce971f3"
+    },
+    {
+      "file": "中国软件开源生态贡献者行为分析_王哲.pdf",
+      "original_filename": "中国软件开源生态贡献者行为分析_王哲.pdf",
+      "pdf_pages": 17,
+      "bytes": 752412,
+      "sha256": "453667736b0b8407bf835a0d9303d560bf08086aba4b93ad1eef523d70d74fa8"
+    }
+  ]
+}

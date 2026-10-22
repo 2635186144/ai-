@@ -2,9 +2,11 @@ import {test,expect} from '@playwright/test';
 
 test('whole-paper report is primary, explains the paper and links a reading route to source',async({page})=>{
  test.setTimeout(45000);
- const errors=[];page.on('pageerror',e=>errors.push(e.message));let run=null,readyReport=null;
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));let run=null,readyReport=null,localIdentity=null;
  // Explicit transport fixtures, no model service. The test server also has no Key.
- await page.route('**/report-plan',async route=>{const r=await route.fetch(),d=await r.json();d.model={...d.model,configured:true,model_name:'模拟数据：浏览器替身'};await route.fulfill({json:d});});
+ // First exercise historical APIs without title_identity, then new local-title
+ // presentation with the real fixture's parsed source, still without an LLM.
+ await page.route('**/report-plan',async route=>{const r=await route.fetch(),d=await r.json();localIdentity=d.title_identity;delete d.title_identity;d.model={...d.model,configured:true,model_name:'模拟数据：浏览器替身'};await route.fulfill({json:d});});
  await page.route('**/reports',async route=>{
   if(route.request().method()==='GET'){await route.fulfill({json:{items:run?[run]:[]}});return;}
   const command=route.request().postDataJSON();expect(command.consent_to_send).toBe(true);expect(command.automatic_recovery).toBe(true);
@@ -117,11 +119,48 @@ test('whole-paper report is primary, explains the paper and links a reading rout
   expect(positions.nav.bottom).toBeLessThanOrEqual(positions.tools.top+1);
   expect(positions.library.height).toBeLessThanOrEqual(height-40+1);
  }
- await page.reload();await page.locator('.evidence-document').filter({hasText:'reading-sample'}).filter({hasText:'主论文'}).click();
+ await page.reload();await page.locator('.evidence-document[title="reading-sample.pdf"]').filter({hasText:'主论文'}).click();
  await expect(panel.getByRole('heading',{name:'《模拟数据：用于演示解读流程的测试论文》',exact:true})).toBeVisible();
  await page.setViewportSize({width:390,height:844});
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
  await panel.locator('#paper-route').screenshot({path:'test-results/whole-paper-reading-route-mobile.png'});
+ // The old model title is deliberately wrong. Local source locators provide
+ // the visible title without rewriting the exported historical model output.
+ run.title_identity=localIdentity;
+ run.report={...run.report,title:{text:'未能从所提供材料中识别原文题名',evidence_ids:['e1']}};
+ await page.reload();
+ await page.locator('.evidence-document[title="reading-sample.pdf"]').filter({hasText:'主论文'}).click();
+ await expect(panel.locator('#paper-identity h3')).toHaveText(localIdentity.text);
+ await expect(panel.locator('#paper-identity')).not.toContainText('未能从所提供材料中识别原文题名');
+ await panel.getByRole('button',{name:/题名原文/}).first().click();
+ await expect(page.locator('.evidence-selection')).toContainText(localIdentity.sources[0].quote.slice(0,35));
+ const localHref=await panel.getByRole('link',{name:'导出解读与来源记录'}).getAttribute('href');
+ const localExport=JSON.parse(decodeURIComponent(localHref.slice(localHref.indexOf(',')+1)));
+ expect(localExport.report.title.text).toBe('未能从所提供材料中识别原文题名');
+ expect(localExport.title_identity.status).toBe('source_located');
+ run.title_identity={text:'模拟数据：文件名备用题名',status:'filename_only',sources:[],note:'暂按文件名显示，尚未与原文题名核对。'};
+ await page.reload();
+ await page.locator('.evidence-document[title="reading-sample.pdf"]').filter({hasText:'主论文'}).click();
+ await expect(panel.locator('#paper-identity h3')).toHaveText('模拟数据：文件名备用题名');
+ await expect(panel.locator('#paper-identity')).toContainText('暂按文件名显示');
+ await expect(panel.locator('#paper-identity > .report-evidence')).toHaveCount(0);
+ run.report={...run.report,open_questions:['模拟数据：作者未给出公式？','模拟数据：这个样本范围为什么重要？']};
+ run.support_review={notice:'模拟数据：仅位置校验，语义未经独立验证。',entries:[
+  {target:'conclusion',text:run.report.conclusion.text,status:'model_supported',kind:'explanation',reason:'模拟数据：保留限定条件。',locations:[evidence[0]],candidate_sources:[]},
+  {target:'open_questions.0',text:run.report.open_questions[0],status:'needs_check',kind:'criticism',reason:'模拟数据：缺失性断言尚无充分依据。',absence_or_conflict_language:true,locations:[evidence[0]],candidate_sources:[]},
+  {target:'open_questions.1',text:run.report.open_questions[1],status:'model_supported',kind:'reading_question',reason:'模拟数据：与限定样本直接相关。',locations:[evidence[1]],candidate_sources:[]}
+ ]};
+ await page.reload();
+ await page.locator('.evidence-document[title="reading-sample.pdf"]').filter({hasText:'主论文'}).click();
+ await panel.getByText('待讨论问题',{exact:true}).click();
+ await expect(panel.locator('.report-discussion li').filter({hasText:'模拟数据：这个样本范围为什么重要？'})).toBeVisible();
+ await expect(panel.getByText('模拟数据：作者未给出公式？',{exact:true}).first()).not.toBeVisible();
+ await panel.getByText('待核对或暂不采纳的疑问 · 1 项',{exact:true}).click();
+ await expect(panel.locator('.report-pending-questions')).toContainText('尚不能据此认定论文存在缺陷');
+ await panel.locator('.report-pending-questions').getByRole('button',{name:/核查原文/}).click();
+ await expect(page.locator('.evidence-selection')).toContainText(evidence[0].quote.slice(0,35));
+ await panel.getByText('关键结论与疑问的支持核查',{exact:true}).click();
+ await expect(panel.locator('.report-support')).toContainText('同次生成的模型自查，尚无独立审阅');
  expect(errors).toEqual([]);
 });
 

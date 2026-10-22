@@ -17,7 +17,7 @@ test('reading preparation gates packets, invalidates edits, persists and fits mo
  let plan=await(await page.request.get(base+'/reading')).json();
  for(const p of plan.pages){const r=await page.request.post(base+'/reading',{headers:{'Idempotency-Key':crypto.randomUUID()},data:{revision:plan.revision,action:'confirm_page',page:p.page,status:'pending'}});expect(r.ok()).toBeTruthy();plan=await r.json();}
  for(const m of plan.materials){const r=await page.request.post(base+'/reading',{headers:{'Idempotency-Key':crypto.randomUUID()},data:{revision:plan.revision,action:'mark_material',material_id:m.id,status:'pending'}});expect(r.ok()).toBeTruthy();plan=await r.json();}
- await page.reload();await page.locator('.evidence-document').filter({hasText:'reading-sample'}).filter({hasText:'补充材料'}).click();await expect(prep.locator('.reading-state')).toContainText('版本 '+plan.revision);
+ await page.reload();await page.locator('.evidence-document[title="reading-sample.pdf"]').filter({hasText:'补充材料'}).click();await expect(prep.locator('.reading-state')).toContainText('版本 '+plan.revision);
  await expect(prep.getByRole('button',{name:'打开分节原文包'})).toBeEnabled();
  await prep.getByText('校正章节、阅读顺序和图表（可选）',{exact:true}).click();
  async function mutate(button){const pending=page.waitForResponse(r=>r.url().endsWith('/reading')&&r.request().method()==='POST');await button.click();const response=await pending;expect(response.ok()).toBeTruthy();const result=await response.json();await expect(prep.locator('.reading-state')).toContainText('版本 '+result.revision);return result;}
@@ -36,7 +36,7 @@ test('reading preparation gates packets, invalidates edits, persists and fits mo
  await expect(packet).toContainText('尚未调用模型');
  await expect(packet.getByRole('link',{name:'下载含来源与排除记录的材料包'})).toBeVisible();
  await prep.screenshot({path:'test-results/reading-preparation-desktop.png'});
- await page.reload();await page.locator('.evidence-document').filter({hasText:'reading-sample'}).filter({hasText:'补充材料'}).click();await expect(prep.locator('.reading-state')).toContainText('结构已核对');
+ await page.reload();await page.locator('.evidence-document[title="reading-sample.pdf"]').filter({hasText:'补充材料'}).click();await expect(prep.locator('.reading-state')).toContainText('结构已核对');
  await page.setViewportSize({width:390,height:844});
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
  await prep.screenshot({path:'test-results/reading-preparation-mobile.png'});

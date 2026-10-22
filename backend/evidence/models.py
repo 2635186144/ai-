@@ -65,11 +65,29 @@ class ExtractionSummary(Contract):
     semantic_reading_performed: Literal[False] = False
 
 
+class TitleSource(Contract):
+    block_id: str
+    pdf_page: int
+    start: int
+    end: int
+    quote: str
+
+
+class TitleIdentity(Contract):
+    text: str
+    status: Literal['source_located', 'filename_only', 'unresolved']
+    method: Literal['labeled_title', 'front_matter_layout', 'filename']
+    sources: list[TitleSource]
+    note: str
+    version: str
+
+
 class EvidenceDocument(Contract):
     document: DocumentVersion
     filename: str
     title: str
     extraction: ExtractionSummary | None
+    title_identity: TitleIdentity | None = None
 
 
 class BlockPage(Contract):

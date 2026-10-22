@@ -169,3 +169,12 @@
 @media(max-width:1250px){.report-prose{font-size:17px}}
 @media(max-width:750px){.report-body .report-identity>h3{font-size:32px}.report-body h3{font-size:26px}.report-body h4{font-size:19px}.report-takeaway .report-prose{font-size:18px}.report-navigation a{font-size:13px}.report-section-note{font-size:12px}}
 @media(max-width:580px){.report-heading h2{font-size:28px}.report-body .report-identity>h3{font-size:28px}.report-body h3{font-size:25px}.report-body h4{font-size:18px}.report-prose,.report-direction .report-prose,.report-map .report-prose,.report-contribution .report-prose{font-size:16px}.report-direction{display:block}.report-direction>span{display:block;font-size:13px;margin-bottom:8px}.report-takeaway .report-prose{font-size:18px}.report-takeaway-mark{font-size:34px}.report-navigation a{font-size:12px}.report-body .report-takeaway h4{font-size:13px}.report-core-item .report-method-title{padding-left:10px}.report-contribution>h4{padding-left:10px}}
+.report-support,.report-pending-questions{margin:1.4rem 0;border-top:1px solid var(--line,#dcded3);padding-top:1rem;color:#314740}
+.report-support summary,.report-pending-questions summary{cursor:pointer;color:#795f3e;font-size:1rem}
+.report-support article,.report-pending-questions article{padding:1.1rem 0;border-bottom:1px solid #e6e5db}
+.report-support article header{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.report-support-status{font-size:.9rem;color:#80613c;border-bottom:1px solid #cab892;padding-bottom:.15rem}
+.report-support-scope,.report-support-reason,.report-support-candidates>p{font-size:1rem;line-height:1.8;color:#65746b}
+.report-support-caution{font-size:.95rem;color:#82603d;border-left:2px solid #b29a70;padding-left:.8rem}
+.report-support-candidates summary{font-size:.95rem;color:#795f3e;cursor:pointer}
+.report-support-candidates blockquote{font-size:1rem;line-height:1.8;margin:1rem 0;padding-left:1rem;border-left:2px solid #c9d0be;overflow-wrap:anywhere}
